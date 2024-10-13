@@ -69,55 +69,31 @@ function renderTodoLists() {
 function addSwipeListeners() {
     const todoItems = document.querySelectorAll('.todo-item');
     todoItems.forEach(item => {
-        let startX, startY, moveX, moveY;
+        let startX, moveX;
         const content = item.querySelector('.todo-item-content');
-        const actions = item.querySelector('.swipe-actions');
         const swipeThreshold = 50; // minimum distance to be considered a swipe
-        const swipeTimeout = 300; // maximum time for swipe
-        let swipeStartTime;
 
         item.addEventListener('touchstart', e => {
             startX = e.touches[0].clientX;
-            startY = e.touches[0].clientY;
-            swipeStartTime = Date.now();
         });
 
         item.addEventListener('touchmove', e => {
             moveX = e.touches[0].clientX;
-            moveY = e.touches[0].clientY;
-            const diffX = startX - moveX;
-            const diffY = startY - moveY;
-
-            // Check if the swipe is more horizontal than vertical
-            if (Math.abs(diffX) > Math.abs(diffY)) {
-                e.preventDefault(); // Prevent scrolling
-                const swipePercentage = (diffX / item.offsetWidth) * 100;
-                if (swipePercentage > 0) { // Swiping left
-                    content.style.transform = `translateX(-${Math.min(swipePercentage, 50)}%)`;
-                    actions.style.transform = `translateX(-${Math.min(swipePercentage * 2, 100)}%)`;
-                } else { // Swiping right
-                    content.style.transform = 'translateX(0)';
-                    actions.style.transform = 'translateX(100%)';
-                }
+            const diff = startX - moveX;
+            
+            if (diff > 0) { // Swiping left
+                e.preventDefault();
+                content.style.transform = `translateX(-${Math.min(diff, 120)}px)`;
             }
         });
 
         item.addEventListener('touchend', e => {
-            const diffX = startX - moveX;
-            const diffY = startY - moveY;
-            const elapsedTime = Date.now() - swipeStartTime;
-
-            if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > swipeThreshold && elapsedTime < swipeTimeout) {
-                if (diffX > 0) { // Swiped left
-                    content.style.transform = 'translateX(-50%)';
-                    actions.style.transform = 'translateX(0)';
-                } else { // Swiped right
-                    content.style.transform = 'translateX(0)';
-                    actions.style.transform = 'translateX(100%)';
-                }
+            const diff = startX - moveX;
+            
+            if (diff > swipeThreshold) {
+                content.style.transform = 'translateX(-120px)'; // Fully reveal buttons
             } else {
-                content.style.transform = 'translateX(0)';
-                actions.style.transform = 'translateX(100%)';
+                content.style.transform = 'translateX(0)'; // Reset position
             }
         });
 
@@ -126,9 +102,22 @@ function addSwipeListeners() {
         const deleteAction = item.querySelector('.delete-action');
         const checkbox = item.querySelector('input[type="checkbox"]');
 
-        editAction.addEventListener('click', () => editItem(item));
-        deleteAction.addEventListener('click', () => deleteItem(item));
+        editAction.addEventListener('click', () => {
+            editItem(item);
+            content.style.transform = 'translateX(0)'; // Reset position after action
+        });
+        deleteAction.addEventListener('click', () => {
+            deleteItem(item);
+            content.style.transform = 'translateX(0)'; // Reset position after action
+        });
         checkbox.addEventListener('change', () => toggleItem(item));
+
+        // Close swipe actions when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!item.contains(e.target)) {
+                content.style.transform = 'translateX(0)';
+            }
+        });
     });
 }
 

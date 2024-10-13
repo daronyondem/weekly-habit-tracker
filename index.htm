@@ -48,25 +48,24 @@
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
         .todo-item {
-            display: flex;
-            align-items: center;
-            margin-bottom: 15px;
             position: relative;
             overflow: hidden;
             height: 50px;
             border-radius: 8px;
             background-color: #fff;
-            touch-action: pan-y;
+            margin-bottom: 15px;
         }
         .todo-item-content {
-            display: flex;
-            align-items: center;
+            position: absolute;
+            top: 0;
+            left: 0;
             width: 100%;
             height: 100%;
+            display: flex;
+            align-items: center;
             padding: 0 15px;
-            transition: transform 0.3s ease;
             background-color: #fff;
-            z-index: 1;
+            transition: transform 0.3s ease;
         }
         .todo-item .emoji {
             font-size: 24px;
@@ -86,11 +85,9 @@
             right: 0;
             height: 100%;
             display: flex;
-            transform: translateX(100%);
-            transition: transform 0.3s ease;
         }
         .swipe-action {
-            width: 80px;
+            width: 60px;
             height: 100%;
             display: flex;
             align-items: center;
