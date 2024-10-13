@@ -71,7 +71,8 @@ function addSwipeListeners() {
     todoItems.forEach(item => {
         let startX, startY, moveX, moveY;
         const content = item.querySelector('.todo-item-content');
-        const swipeThreshold = 100; // minimum distance to be considered a swipe
+        const actions = item.querySelector('.swipe-actions');
+        const swipeThreshold = 50; // minimum distance to be considered a swipe
         const swipeTimeout = 300; // maximum time for swipe
         let swipeStartTime;
 
@@ -90,8 +91,13 @@ function addSwipeListeners() {
             // Check if the swipe is more horizontal than vertical
             if (Math.abs(diffX) > Math.abs(diffY)) {
                 e.preventDefault(); // Prevent scrolling
-                if (diffX > 0) { // Swiping left
-                    content.style.transform = `translateX(-${Math.min(diffX, item.offsetWidth / 2)}px)`;
+                const swipePercentage = (diffX / item.offsetWidth) * 100;
+                if (swipePercentage > 0) { // Swiping left
+                    content.style.transform = `translateX(-${Math.min(swipePercentage, 50)}%)`;
+                    actions.style.transform = `translateX(-${Math.min(swipePercentage * 2, 100)}%)`;
+                } else { // Swiping right
+                    content.style.transform = 'translateX(0)';
+                    actions.style.transform = 'translateX(100%)';
                 }
             }
         });
@@ -104,11 +110,14 @@ function addSwipeListeners() {
             if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > swipeThreshold && elapsedTime < swipeTimeout) {
                 if (diffX > 0) { // Swiped left
                     content.style.transform = 'translateX(-50%)';
+                    actions.style.transform = 'translateX(0)';
                 } else { // Swiped right
                     content.style.transform = 'translateX(0)';
+                    actions.style.transform = 'translateX(100%)';
                 }
             } else {
                 content.style.transform = 'translateX(0)';
+                actions.style.transform = 'translateX(100%)';
             }
         });
 
